@@ -121,6 +121,9 @@ func (s *Store) MarkSent(id string, now time.Time) (*Notification, error) {
 	case StatusRead:
 		return nil, ErrAlreadyRead
 	}
+	if n.ScheduleAt != nil && now.Before(*n.ScheduleAt) {
+		return nil, ErrInvalidSchedule
+	}
 	n.Status = StatusSent
 	n.SentAt = &now
 	return n.clone(), nil
